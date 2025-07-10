@@ -1,7 +1,7 @@
 // Тестовий файл для перевірки всіх ендпоінтів API
 const BASE_URL = 'http://localhost:3003';
 
-// Функція для виконання HTTP запитів
+
 async function makeRequest(url, method = 'GET', body = null) {
   const options = {
     method,
@@ -47,16 +47,16 @@ async function testCreateMovie() {
     plot: 'This is a test movie for API testing',
     runtime: 120
   };
-  
+
   const result = await makeRequest(`${BASE_URL}/movies`, 'POST', newMovie);
   console.log('Status:', result.status);
   console.log('Data:', result.data);
-  
+
   // Зберігаємо ID створеного фільму для подальших тестів
   if (result.data?.insertedId) {
     global.testMovieId = result.data.insertedId;
   }
-  
+
   return result.data?.insertedId;
 }
 
@@ -78,11 +78,11 @@ async function testCreateManyMovies() {
       runtime: 110
     }
   ];
-  
+
   const result = await makeRequest(`${BASE_URL}/movies/many`, 'POST', newMovies);
   console.log('Status:', result.status);
   console.log('Data:', result.data);
-  
+
   return result.data?.insertedIds;
 }
 
@@ -92,7 +92,7 @@ async function testUpdateMovie(movieId) {
     plot: 'Updated plot for test movie',
     runtime: 130
   };
-  
+
   const result = await makeRequest(`${BASE_URL}/movies/${movieId}`, 'PUT', updateData);
   console.log('Status:', result.status);
   console.log('Data:', result.data);
@@ -104,7 +104,7 @@ async function testUpdateManyMovies() {
     filter: { genres: 'Test' },
     update: { updated: true, updatedAt: new Date().toISOString() }
   };
-  
+
   const result = await makeRequest(`${BASE_URL}/movies`, 'PUT', updateData);
   console.log('Status:', result.status);
   console.log('Data:', result.data);
@@ -120,7 +120,7 @@ async function testReplaceMovie(movieId) {
     runtime: 150,
     replaced: true
   };
-  
+
   const result = await makeRequest(`${BASE_URL}/movies/${movieId}/replace`, 'PUT', replacementData);
   console.log('Status:', result.status);
   console.log('Data:', result.data);
@@ -138,7 +138,7 @@ async function testDeleteManyMovies() {
   const deleteData = {
     filter: { genres: 'Test' }
   };
-  
+
   const result = await makeRequest(`${BASE_URL}/movies`, 'DELETE', deleteData);
   console.log('Status:', result.status);
   console.log('Data:', result.data);
@@ -147,33 +147,33 @@ async function testDeleteManyMovies() {
 // Основна функція тестування
 async function runAllTests() {
   console.log('Початок тестування API...\n');
-  
+
   try {
     // Тестуємо читання
     await testGetMovies();
     await testGetMoviesWithProjection();
-    
+
     // Тестуємо створення
     const movieId = await testCreateMovie();
     const movieIds = await testCreateManyMovies();
-    
+
     if (movieId) {
       // Тестуємо оновлення
       await testUpdateMovie(movieId);
       await testUpdateManyMovies();
-      
+
       // Тестуємо заміну
       await testReplaceMovie(movieId);
-      
+
       // Тестуємо видалення одного
       await testDeleteMovie(movieId);
     }
-    
+
     // Тестуємо видалення багатьох
     await testDeleteManyMovies();
-    
+
     console.log('\n=== Тестування завершено ===');
-    
+
   } catch (error) {
     console.error('Помилка під час тестування:', error);
   }
